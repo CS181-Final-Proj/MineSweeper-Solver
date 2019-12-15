@@ -8,11 +8,11 @@ MINE_COUNT = 99     # 地雷数
 
 
 class BlockStatus(Enum):
-    normal = 1  # 未点击
-    opened = 2  # 已点击
+    normal = 1  # unopened
+    opened = 2  # opened
     mine = 3    # 地雷
-    flag = 4    # 标记为地雷
-    ask = 5     # 标记为问号
+    flag = 4    # flag
+    ask = 5     # ?
     bomb = 6    # 踩中地雷
     hint = 7    # 被双击的周围
     double = 8  # 正被鼠标左右键双击
@@ -22,7 +22,7 @@ class Mine:
     def __init__(self, x, y, value=0):
         self._x = x
         self._y = y
-        self._value = 0
+        self._value = 0 # if value == 1, then it's a mine
         self._around_mine_count = -1
         self._status = BlockStatus.normal
         self.set_value(value)
@@ -79,7 +79,7 @@ class MineBlock:
     def __init__(self):
         self._block = [[Mine(i, j) for i in range(BLOCK_WIDTH)] for j in range(BLOCK_HEIGHT)]
 
-        # 埋雷
+        # set bomb randomly, set block value to 1
         for i in random.sample(range(BLOCK_WIDTH * BLOCK_HEIGHT), MINE_COUNT):
             self._block[i // BLOCK_WIDTH][i % BLOCK_WIDTH].value = 1
 
@@ -91,25 +91,34 @@ class MineBlock:
     def getmine(self, x, y):
         return self._block[y][x]
 
+
+
+    '''return true if it's not a bomb, otherwise return false'''
     def open_mine(self, x, y):
-        # 踩到雷了
+        # open a bomb, return false
+        # if x > 29 or y > 15:
+        #     print("overflow", x, y)
+        #     return True
+
         if self._block[y][x].value:
             self._block[y][x].status = BlockStatus.bomb
             return False
 
-        # 先把状态改为 opened
+        # the block to open is not a bomb
+        # first set block status to opened
         self._block[y][x].status = BlockStatus.opened
 
+        # get all the blocks around the current block 
         around = _get_around(x, y)
 
+        # calculate the # of bomb in the 8 blocks around
         _sum = 0
         for i, j in around:
             if self._block[j][i].value:
                 _sum += 1
         self._block[y][x].around_mine_count = _sum
 
-        # 如果周围没有雷，那么将周围8个未中未点开的递归算一遍
-        # 这就能实现一点出现一大片打开的效果了
+        # if no bomb around, open blocks recursively
         if _sum == 0:
             for i, j in around:
                 if self._block[j][i].around_mine_count == -1:
@@ -154,3 +163,9 @@ def _get_around(x, y):
     # 这里注意，range 末尾是开区间，所以要加 1
     return [(i, j) for i in range(max(0, x - 1), min(BLOCK_WIDTH - 1, x + 1) + 1)
             for j in range(max(0, y - 1), min(BLOCK_HEIGHT - 1, y + 1) + 1) if i != x or j != y]
+
+
+
+############### new functions added by luyr ##################
+
+
