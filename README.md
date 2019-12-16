@@ -10,3 +10,5 @@ flag:
 	--LG  
 	--BN  
 	--DQN  
+
+Please modify agent.py to add your self defined solver.
