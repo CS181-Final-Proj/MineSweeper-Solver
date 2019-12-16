@@ -95,10 +95,6 @@ class MineBlock:
 
     '''return true if it's not a bomb, otherwise return false'''
     def open_mine(self, x, y):
-        # open a bomb, return false
-        # if x > 29 or y > 15:
-        #     print("overflow", x, y)
-        #     return True
 
         if self._block[y][x].value:
             self._block[y][x].status = BlockStatus.bomb
@@ -158,6 +154,33 @@ class MineBlock:
                 self._block[j][i].status = BlockStatus.normal
 
 
+
+#################################### functions add by luyr ####################################
+
+    def get_game_state(self):
+        state = []
+        for row in self.block:
+            row_state = []
+            for mine in row:
+                if mine._around_mine_count == -1:
+                    row_state.append(None)
+                else:
+                    row_state.append(mine._around_mine_count)
+            state.append(row_state)
+        return state
+
+
+    def get_block_state(self, x, y):
+        state = self.block[x][y]._around_mine_count
+        return state if state != -1 else None
+
+
+#################################### functions add by luyr ####################################
+
+
+
+
+
 def _get_around(x, y):
     """返回(x, y)周围的点的坐标"""
     # 这里注意，range 末尾是开区间，所以要加 1
@@ -166,6 +189,5 @@ def _get_around(x, y):
 
 
 
-############### new functions added by luyr ##################
 
 
