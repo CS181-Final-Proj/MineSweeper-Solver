@@ -165,6 +165,12 @@ def solver():
             screen.blit(img_face_fail, (face_pos_x, face_pos_y))
         elif game_status == GameStatus.win:
             screen.blit(img_face_success, (face_pos_x, face_pos_y))
+            print("+-----------------+")
+            print("  you did it !!!!")
+            print("+-----------------+")
+            time.sleep(1)
+            sys.exit()
+
         else:
             screen.blit(img_face_normal, (face_pos_x, face_pos_y))
 
